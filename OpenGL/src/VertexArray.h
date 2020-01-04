@@ -1,6 +1,8 @@
 #pragma once
 #include "VertexBuffer.h"
-#include "VertexBufferLayout.h"
+
+// Forward declaration to avoid recursive includings
+class VertexBufferLayout;
 
 class VertexArray 
 {
