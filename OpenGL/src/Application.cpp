@@ -11,6 +11,11 @@
 #include "VertexBufferLayout.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 int main(void)
 {
@@ -20,12 +25,13 @@ int main(void)
 	if (!glfwInit())
 		return -1;
 
+	const char* glsl_version = "#version 130";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -45,10 +51,10 @@ int main(void)
 
 	{ // New scope in order to delete all objects allocated on the stack before deleting the opengl context
 		float positions[] = {
-			-0.5f,-0.5f, 0.0f, 0.0f, //0
-			 0.5f,-0.5f, 1.0f, 0.0f, //1
-			 0.5f, 0.5f, 1.0f, 1.0f, //2
-			-0.5f, 0.5f, 0.0f, 1.0f  //3
+			-50.0f, -50.0f, 0.0f, 0.0f, //0
+			 50.0f, -50.0f, 1.0f, 0.0f, //1
+			 50.0f,  50.0f, 1.0f, 1.0f, //2
+			-50.0f,  50.0f, 0.0f, 1.0f  //3
 		};
 
 		unsigned int indexes[] = {
@@ -70,9 +76,14 @@ int main(void)
 
 		IndexBuffer ib(indexes, 6);
 
+		glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+
+
 		Shader shader("resources/shaders/Basic.shader");
 		shader.Bind();
 		shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+
 
 		Texture texture("resources/textures/el-capitan.png");
 		texture.Bind();
@@ -85,6 +96,16 @@ int main(void)
 
 		Renderer renderer;
 
+		// Setup Dear ImGui context
+		ImGui::CreateContext();
+
+		ImGui::StyleColorsDark();
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init(glsl_version);
+
+		glm::vec3 translationA(200, 200, 0);
+		glm::vec3 translationB(400, 200, 0);
+
 		float r = 0.0f;
 		float increment = 0.05f;
 		/* Loop until the user closes the window */
@@ -93,10 +114,28 @@ int main(void)
 			/* Render here */
 			renderer.Clear();
 
-			shader.Bind();
-			shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
 
-			renderer.Draw(va, ib, shader);
+
+			{
+				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
+				glm::mat4 mvp = proj * view * model;
+				shader.Bind();
+				shader.SetUniformMat4f("u_MVP", mvp);
+
+				renderer.Draw(va, ib, shader);
+			}
+
+			{
+				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
+				glm::mat4 mvp = proj * view * model;
+				shader.Bind();
+				shader.SetUniformMat4f("u_MVP", mvp);
+
+				renderer.Draw(va, ib, shader);
+			}
 
 			if (r > 1.0f)
 				increment = -0.05f;
@@ -105,6 +144,21 @@ int main(void)
 
 			r += increment;
 
+			// Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+			{
+
+				// Create a window called and append into it.
+				ImGui::Begin("Hello, world!");
+				ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 960.0f);
+				ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);
+
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+				ImGui::End();
+			}
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 			/* Swap front and back buffers */
 			glfwSwapBuffers(window);
 
@@ -112,6 +166,11 @@ int main(void)
 			glfwPollEvents();
 		}
 	}
+
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;

@@ -1,7 +1,6 @@
 #include "Texture.h"
 
-//TODO: include vendor folder in the include paths
-#include "vendor/stb_image/stb_image.h"
+#include "stb_image/stb_image.h"
 
 Texture::Texture(std::string path)
 	: m_RendererID(0), m_FilePath(path), m_LocalBuffer(nullptr), m_Height(0), m_Width(0), m_BPP(0)
