@@ -5,7 +5,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 test::TestDrawCube::TestDrawCube()
-	: m_Translation(1.0f, 1.0f, 1.0f), m_Rotation(1.0f,1.0f,1.0f), m_Angle(1.0f)
+	: m_Translation(1.0f, 1.0f, 1.0f), m_Rotation(1.0f, 1.0f, 1.0f), m_Angle(1.0f)
 {
 	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
@@ -111,9 +111,6 @@ test::TestDrawCube::TestDrawCube()
 	// Accept fragment if it closer to the camera than the former one
 	GLCall(glDepthFunc(GL_LESS));
 
-	//GLCall(glEnable(GL_BLEND));
-	//GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
 
 	m_VAO = std::make_unique<VertexArray>();
 	// If vertex buffer were created in the constructor on the stack, once the program leaves the constructor 
@@ -138,6 +135,7 @@ test::TestDrawCube::TestDrawCube()
 
 test::TestDrawCube::~TestDrawCube()
 {
+	GLCall(glDisable(GL_DEPTH_TEST));
 }
 
 void test::TestDrawCube::OnUpdate(float deltaTime)
@@ -153,7 +151,7 @@ void test::TestDrawCube::OnRender()
 	Renderer renderer;
 
 	glm::mat4 proj = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, -5.0f, 5.0f);
-	glm::mat4 view = glm::rotate(glm::mat4(1.0f), m_Angle , m_Rotation);
+	glm::mat4 view = glm::rotate(glm::mat4(1.0f), m_Angle, m_Rotation);
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), m_Translation);
 	glm::mat4 mvp = proj * view * model;
 	m_Shader->Bind();
