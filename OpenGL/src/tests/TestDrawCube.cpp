@@ -5,6 +5,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 test::TestDrawCube::TestDrawCube()
+	: m_Translation(1.0f, 1.0f, 1.0f), m_Rotation(1.0f,1.0f,1.0f), m_Angle(1.0f)
 {
 	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
@@ -117,7 +118,7 @@ test::TestDrawCube::TestDrawCube()
 	m_VAO = std::make_unique<VertexArray>();
 	// If vertex buffer were created in the constructor on the stack, once the program leaves the constructor 
 	// the vertex buffer would be deleted and once this object is deleted from the CPU it is deleted from the GPU as well
-	m_VertexBuffer = std::make_unique<VertexBuffer>(positionsAndColors, 12 * 3* 6 * sizeof(float));
+	m_VertexBuffer = std::make_unique<VertexBuffer>(positionsAndColors, 12 * 3 * 6 * sizeof(float));
 
 	VertexBufferLayout layout;
 	layout.Push<float>(3); // cube coordinates
@@ -151,21 +152,24 @@ void test::TestDrawCube::OnRender()
 
 	Renderer renderer;
 
-	
-			/*glm::mat4 model = glm::translate(glm::mat4(1.0f), m_TranslationA);
-			glm::mat4 mvp = m_Proj * m_View * model;*/
-		m_Shader->Bind();
+	glm::mat4 proj = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, -5.0f, 5.0f);
+	glm::mat4 view = glm::rotate(glm::mat4(1.0f), m_Angle , m_Rotation);
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), m_Translation);
+	glm::mat4 mvp = proj * view * model;
+	m_Shader->Bind();
+	m_Shader->SetUniformMat4f("u_MVP", mvp);
 
 
-		renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
-		//glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
-	
+	renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
+	//glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+
 
 }
 
 void test::TestDrawCube::OnImGuiRender()
 {
-	//ImGui::SliderFloat3("Translation A", &m_TranslationA.x, 0.0f, 960.0f);
-	//ImGui::SliderFloat3("Translation B", &m_TranslationB.x, 0.0f, 960.0f);
-	//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::SliderFloat3("Translation", &m_Translation.x, -5.0f, 5.0f);
+	ImGui::SliderFloat3("Rotation", &m_Rotation.x, -5.0f, 5.0f);
+	ImGui::SliderFloat("Angle", &m_Angle, -5.0f, 5.0f);
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }
