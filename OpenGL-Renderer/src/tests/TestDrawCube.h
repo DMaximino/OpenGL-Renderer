@@ -4,14 +4,16 @@
 #include "VertexBufferLayout.h"
 #include "Texture.h"
 #include <memory>
+#include <GLFW/glfw3.h>
+#include "CameraController.h"
 
 
 namespace test {
 
-	class TestDrawCube : public Test 
+	class TestDrawCube : public Test
 	{
 	public:
-		TestDrawCube();
+		TestDrawCube(WindowProperties window);
 		~TestDrawCube();
 
 		void OnUpdate(float deltaTime) override;
@@ -24,8 +26,9 @@ namespace test {
 		std::unique_ptr<IndexBuffer> m_IndexBuffer;
 		std::unique_ptr<Shader> m_Shader;
 
-		glm::vec3 m_Translation;
-		glm::vec3 m_Rotation;
-		float m_Angle;
-};
+		bool m_EditMode;
+		GLFWwindow* m_Window;
+		CameraController m_CameraController;
+	
+	};
 }

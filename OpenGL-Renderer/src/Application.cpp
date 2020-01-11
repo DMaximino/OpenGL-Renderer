@@ -36,7 +36,8 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
+	const int windowWidth = 960, windowHeight = 540;
+	window = glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -69,14 +70,17 @@ int main(void)
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
+		WindowProperties windowProperties = { window, windowWidth, windowHeight };
+
 		test::Test* currentTest = nullptr;
 		test::TestMenu * testMenu = new test::TestMenu(currentTest);
 		currentTest = testMenu;
 
 		testMenu->RegisterTest<test::TestClearColor>("Clear Color");
 		testMenu->RegisterTest<test::TestTexture2D>("Texture 2D");
-		testMenu->RegisterTest<test::TestDrawCube>("Draw Cube");
+		testMenu->RegisterTest<test::TestDrawCube>("Draw Cube", windowProperties);
 
+		double lastTime = glfwGetTime();
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
@@ -91,7 +95,9 @@ int main(void)
 
 			if (currentTest) 
 			{
-				currentTest->OnUpdate(0.0f);
+				double deltaTime = float(glfwGetTime() - lastTime);
+				currentTest->OnUpdate(deltaTime);
+				lastTime = glfwGetTime();
 				currentTest->OnRender();
 				ImGui::Begin("Test");
 				if (currentTest != testMenu && ImGui::Button("<-")) 

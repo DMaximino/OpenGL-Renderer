@@ -4,9 +4,11 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-test::TestDrawCube::TestDrawCube()
-	: m_Translation(1.0f, 1.0f, 1.0f), m_Rotation(1.0f, 1.0f, 1.0f), m_Angle(1.0f)
+
+test::TestDrawCube::TestDrawCube(WindowProperties windowProps)
+	: m_CameraController(windowProps), m_Window(windowProps.WindowObject), m_EditMode(true)
 {
+
 	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
 	const float positions[] = {
@@ -47,6 +49,26 @@ test::TestDrawCube::TestDrawCube()
 	-1.0f, 1.0f, 1.0f,
 	1.0f,-1.0f, 1.0f
 	};
+
+	//float inc = 0.0f;
+	//float colors[12 * 3 * 3];
+	//float r = 0.1f;
+	//float g = 0.4f;
+	//float b = 0.7f;
+	//for (int v = 0; v < 12 * 3; v++)
+	//{
+	//	if (v % 6 == 0)
+	//	{
+	//		r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	//		g = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	//		b = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	//	}
+
+
+	//	colors[3 * v + 0] = r;
+	//	colors[3 * v + 1] = g;
+	//	colors[3 * v + 2] = b;
+	//}
 
 	const float colors[] = {
 	0.583f,  0.771f,  0.014f,
@@ -110,6 +132,8 @@ test::TestDrawCube::TestDrawCube()
 	GLCall(glEnable(GL_DEPTH_TEST));
 	// Accept fragment if it closer to the camera than the former one
 	GLCall(glDepthFunc(GL_LESS));
+	// Cull triangles which normal is not towards the camera
+	GLCall(glEnable(GL_CULL_FACE));
 
 
 	m_VAO = std::make_unique<VertexArray>();
@@ -129,8 +153,6 @@ test::TestDrawCube::TestDrawCube()
 	m_Shader->Bind();
 	//m_Shader->SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
 
-
-
 }
 
 test::TestDrawCube::~TestDrawCube()
@@ -140,6 +162,15 @@ test::TestDrawCube::~TestDrawCube()
 
 void test::TestDrawCube::OnUpdate(float deltaTime)
 {
+	if (glfwGetKey(m_Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) 
+		m_EditMode = !m_EditMode;
+
+	if (m_EditMode)
+		return;
+
+	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+	m_CameraController.ComputeNewState(deltaTime);
 }
 
 void test::TestDrawCube::OnRender()
@@ -150,24 +181,23 @@ void test::TestDrawCube::OnRender()
 
 	Renderer renderer;
 
-	glm::mat4 proj = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, -5.0f, 5.0f);
-	glm::mat4 view = glm::rotate(glm::mat4(1.0f), m_Angle, m_Rotation);
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), m_Translation);
-	glm::mat4 mvp = proj * view * model;
+	glm::mat4 m_ProjectionMatrix = m_CameraController.GetProjectionMatrix();
+	glm::mat4 m_ViewMatrix = m_CameraController.GetViewMatrix();
+	glm::mat4 model = glm::mat4(1.0f);
+
+	glm::mat4 mvp = m_ProjectionMatrix * m_ViewMatrix * model;
 	m_Shader->Bind();
 	m_Shader->SetUniformMat4f("u_MVP", mvp);
 
 
 	renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
-	//glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
-
 
 }
 
 void test::TestDrawCube::OnImGuiRender()
 {
-	ImGui::SliderFloat3("Translation", &m_Translation.x, -5.0f, 5.0f);
+	/*ImGui::SliderFloat3("Translation", &m_Translation.x, -5.0f, 5.0f);
 	ImGui::SliderFloat3("Rotation", &m_Rotation.x, -5.0f, 5.0f);
-	ImGui::SliderFloat("Angle", &m_Angle, -5.0f, 5.0f);
+	ImGui::SliderFloat("Angle", &m_Angle, -5.0f, 5.0f);*/
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }

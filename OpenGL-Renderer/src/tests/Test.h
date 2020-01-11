@@ -32,6 +32,14 @@ namespace test
 			m_Tests.push_back(std::make_pair(name, []() { return new T(); }));
 		}
 
+		template <typename T, typename A>
+		void RegisterTest(const std::string& name, const A& argument)
+		{
+			std::cout << "Registering test " << name << std::endl;
+
+			m_Tests.push_back(std::make_pair(name, [&argument]() { return new T(argument); }));
+		}
+
 	private:
 		// The list has to have function because we need to return a new instance that can be cleared once it goes out of scope
 		// If we pass a pointer the destructor of the test won't be called when we close the test
