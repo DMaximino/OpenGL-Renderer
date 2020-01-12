@@ -1,12 +1,12 @@
 #include "TestDrawCube.h"
 #include "Renderer.h"
-#include "imgui/imgui.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "stb_image/stb_image.h"
 
 
 test::TestDrawCube::TestDrawCube(WindowProperties windowProps)
-	: m_CameraController(windowProps), m_Window(windowProps.WindowObject), m_EditMode(true)
+	: m_CameraController(windowProps), m_Window(windowProps.WindowObject), m_EditMode(true), m_CtrlPressed(false), m_FileDialog()
 {
 
 	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
@@ -50,26 +50,6 @@ test::TestDrawCube::TestDrawCube(WindowProperties windowProps)
 	1.0f,-1.0f, 1.0f
 	};
 
-	//float inc = 0.0f;
-	//float colors[12 * 3 * 3];
-	//float r = 0.1f;
-	//float g = 0.4f;
-	//float b = 0.7f;
-	//for (int v = 0; v < 12 * 3; v++)
-	//{
-	//	if (v % 6 == 0)
-	//	{
-	//		r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-	//		g = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-	//		b = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-	//	}
-
-
-	//	colors[3 * v + 0] = r;
-	//	colors[3 * v + 1] = g;
-	//	colors[3 * v + 2] = b;
-	//}
-
 	const float colors[] = {
 	0.583f,  0.771f,  0.014f,
 	0.609f,  0.115f,  0.436f,
@@ -109,23 +89,66 @@ test::TestDrawCube::TestDrawCube(WindowProperties windowProps)
 	0.982f,  0.099f,  0.879f
 	};
 
+	const float uvData[] = {
+	0.000059f, 1.0f - 0.000004f,
+	0.000103f, 1.0f - 0.336048f,
+	0.335973f, 1.0f - 0.335903f,
+	1.000023f, 1.0f - 0.000013f,
+	0.667979f, 1.0f - 0.335851f,
+	0.999958f, 1.0f - 0.336064f,
+	0.667979f, 1.0f - 0.335851f,
+	0.336024f, 1.0f - 0.671877f,
+	0.667969f, 1.0f - 0.671889f,
+	1.000023f, 1.0f - 0.000013f,
+	0.668104f, 1.0f - 0.000013f,
+	0.667979f, 1.0f - 0.335851f,
+	0.000059f, 1.0f - 0.000004f,
+	0.335973f, 1.0f - 0.335903f,
+	0.336098f, 1.0f - 0.000071f,
+	0.667979f, 1.0f - 0.335851f,
+	0.335973f, 1.0f - 0.335903f,
+	0.336024f, 1.0f - 0.671877f,
+	1.000004f, 1.0f - 0.671847f,
+	0.999958f, 1.0f - 0.336064f,
+	0.667979f, 1.0f - 0.335851f,
+	0.668104f, 1.0f - 0.000013f,
+	0.335973f, 1.0f - 0.335903f,
+	0.667979f, 1.0f - 0.335851f,
+	0.335973f, 1.0f - 0.335903f,
+	0.668104f, 1.0f - 0.000013f,
+	0.336098f, 1.0f - 0.000071f,
+	0.000103f, 1.0f - 0.336048f,
+	0.000004f, 1.0f - 0.671870f,
+	0.336024f, 1.0f - 0.671877f,
+	0.000103f, 1.0f - 0.336048f,
+	0.336024f, 1.0f - 0.671877f,
+	0.335973f, 1.0f - 0.335903f,
+	0.667969f, 1.0f - 0.671889f,
+	1.000004f, 1.0f - 0.671847f,
+	0.667979f, 1.0f - 0.335851f
+	};
+
 	unsigned int indexes[36];
 
 
 	for (unsigned int i = 0; i < 36; i++)
 		indexes[i] = i;
 
-	float positionsAndColors[216];
+	float positionColorUV[288];
 	unsigned int j = 0;
-	for (unsigned int i = 0; i < 216; i = i + 6)
+	unsigned int k = 0;
+	for (unsigned int i = 0; i < 288; i = i + 8)
 	{
-		positionsAndColors[i] = positions[j];
-		positionsAndColors[i + 1] = positions[j + 1];
-		positionsAndColors[i + 2] = positions[j + 2];
-		positionsAndColors[i + 3] = colors[j];
-		positionsAndColors[i + 4] = colors[j + 1];
-		positionsAndColors[i + 5] = colors[j + 2];
+		positionColorUV[i] = positions[j];
+		positionColorUV[i + 1] = positions[j + 1];
+		positionColorUV[i + 2] = positions[j + 2];
+		positionColorUV[i + 3] = colors[j];
+		positionColorUV[i + 4] = colors[j + 1];
+		positionColorUV[i + 5] = colors[j + 2];
+		positionColorUV[i + 6] = uvData[k];
+		positionColorUV[i + 7] = uvData[k + 1];
 		j += 3;
+		k += 2;
 	}
 
 	// Enable depth test
@@ -139,19 +162,25 @@ test::TestDrawCube::TestDrawCube(WindowProperties windowProps)
 	m_VAO = std::make_unique<VertexArray>();
 	// If vertex buffer were created in the constructor on the stack, once the program leaves the constructor 
 	// the vertex buffer would be deleted and once this object is deleted from the CPU it is deleted from the GPU as well
-	m_VertexBuffer = std::make_unique<VertexBuffer>(positionsAndColors, 12 * 3 * 6 * sizeof(float));
+	m_VertexBuffer = std::make_unique<VertexBuffer>(positionColorUV, 12 * 3 * 8 * sizeof(float));
 
 	VertexBufferLayout layout;
 	layout.Push<float>(3); // cube coordinates
 	layout.Push<float>(3); // cube vertice colors
+	layout.Push<float>(2); // cube vertice colors
 	m_VAO->AddBuffer(*m_VertexBuffer, layout);
 
 
 	m_IndexBuffer = std::make_unique<IndexBuffer>(indexes, 36);
 
-	m_Shader = std::make_unique<Shader>("resources/shaders/DrawCube.shader");
-	m_Shader->Bind();
+	m_TextureShader = std::make_unique<Shader>("resources/shaders/Texture.shader");
+	m_ColorShader = std::make_unique<Shader>("resources/shaders/Color.shader");
+	m_TextureShader->Bind();
+	m_ColorShader->Bind();
 	//m_Shader->SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+
+	//m_Texture = std::make_unique<Texture>("resources/textures/el-capitan.png");
+	//m_Shader->SetUniform1i("u_Texture", 0);
 
 }
 
@@ -162,8 +191,17 @@ test::TestDrawCube::~TestDrawCube()
 
 void test::TestDrawCube::OnUpdate(float deltaTime)
 {
-	if (glfwGetKey(m_Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) 
-		m_EditMode = !m_EditMode;
+	if (glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		m_CtrlPressed = true;
+
+	if (m_CtrlPressed)
+	{
+		if (glfwGetKey(m_Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		{
+			m_EditMode = !m_EditMode;
+			m_CtrlPressed = false;
+		}
+	}
 
 	if (m_EditMode)
 		return;
@@ -180,24 +218,74 @@ void test::TestDrawCube::OnRender()
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 	Renderer renderer;
+	if (m_Texture)
+	{
+		m_Texture->Bind();
+	}
 
 	glm::mat4 m_ProjectionMatrix = m_CameraController.GetProjectionMatrix();
 	glm::mat4 m_ViewMatrix = m_CameraController.GetViewMatrix();
-	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 model1 = glm::mat4(1.0f);
 
-	glm::mat4 mvp = m_ProjectionMatrix * m_ViewMatrix * model;
-	m_Shader->Bind();
-	m_Shader->SetUniformMat4f("u_MVP", mvp);
-
-
-	renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
-
+	glm::mat4 mvp = m_ProjectionMatrix * m_ViewMatrix * model1;
+	if (m_Texture)
+	{
+		m_TextureShader->Bind();
+		m_TextureShader->SetUniformMat4f("u_MVP", mvp);
+		renderer.Draw(*m_VAO, *m_IndexBuffer, *m_TextureShader);
+	}
+	else
+	{
+		m_ColorShader->Bind();
+		m_ColorShader->SetUniformMat4f("u_MVP", mvp);
+		renderer.Draw(*m_VAO, *m_IndexBuffer, *m_ColorShader);
+	}
 }
 
+//TODO: Move to a string utilities class
+std::string GetFileName(const std::string& s) {
+
+	char sep = '/';
+
+#ifdef _WIN32
+	sep = '\\';
+#endif
+
+	size_t i = s.rfind(sep, s.length());
+	if (i != std::string::npos) {
+		return(s.substr(i + 1, s.length() - i));
+	}
+
+	return("");
+}
+
+//TODO: Understand why the texture is shown upside down
 void test::TestDrawCube::OnImGuiRender()
 {
-	/*ImGui::SliderFloat3("Translation", &m_Translation.x, -5.0f, 5.0f);
-	ImGui::SliderFloat3("Rotation", &m_Rotation.x, -5.0f, 5.0f);
-	ImGui::SliderFloat("Angle", &m_Angle, -5.0f, 5.0f);*/
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::Spacing();
+	if (ImGui::Button("Add Texture"))
+		m_FileDialog.Open();
+	m_FileDialog.Display();
+
+	if (m_FileDialog.HasSelected())
+	{
+		std::cout << "Selected filename: " << m_FileDialog.GetSelected().string() << std::endl;
+		m_TexturePath = m_FileDialog.GetSelected().string();
+		if (m_TexturePath.empty() == false)
+		{
+			m_Texture = std::make_unique<Texture>(m_TexturePath.c_str());
+			m_TextureBuffer = m_Texture->GetRenderID();
+			m_TextureShader->Bind();
+			m_TextureShader->SetUniform1i("u_Texture", 0);
+		}
+		m_FileDialog.ClearSelected();
+	}
+
+	if (m_TexturePath.empty() == false)
+	{
+		ImGui::Text("Texture name: %s", GetFileName(m_TexturePath).c_str());
+		ImGui::Text("size = %d x %d", m_Texture->GetWidth(), m_Texture->GetHeight());
+		ImGui::Image((void*)(intptr_t)m_TextureBuffer, ImVec2(300.0f, 200.0f));
+	}
 }

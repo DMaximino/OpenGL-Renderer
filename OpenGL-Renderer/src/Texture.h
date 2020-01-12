@@ -18,4 +18,6 @@ public:
 
 	inline int GetWidth() const { return m_Width; }
 	inline int GetHeight() const { return m_Height; }
+	inline unsigned char * GetBuffer() const { return m_LocalBuffer; }
+	inline unsigned int GetRenderID() const { return m_RendererID; }
 };
