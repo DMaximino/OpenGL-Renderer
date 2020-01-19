@@ -17,7 +17,7 @@
 	{
 		m_ProjectionMatrix = glm::perspective(glm::radians(45.0f), m_Window.Width / m_Window.Height, 0.1f, 100.0f);
 		m_ViewMatrix = glm::lookAt(m_CameraPosition, m_CameraPosition + m_CameraDirection, m_CameraUp);
-		glfwSetScrollCallback(m_Window.WindowObject, ScrollCallback);
+		//glfwSetScrollCallback(m_Window.WindowObject, ScrollCallback);
 	}
 
 	CameraController::~CameraController()
@@ -33,8 +33,8 @@
 		glfwSetCursorPos(m_Window.WindowObject, m_Window.Width / 2.0f, m_Window.Height / 2.0f);
 
 		// Compute new orientation
-		m_HorizontalAngle += m_MouseSpeed * deltaTime * float(960.0f / 2 - xpos);
-		m_VerticalAngle += m_MouseSpeed * deltaTime * float(540.0f / 2 - ypos);
+		m_HorizontalAngle += m_MouseSpeed * deltaTime * float(m_Window.Width / 2 - xpos);
+		m_VerticalAngle += m_MouseSpeed * deltaTime * float(m_Window.Height / 2 - ypos);
 
 		m_CameraDirection = glm::vec3(
 			cos(m_VerticalAngle) * sin(m_HorizontalAngle),
