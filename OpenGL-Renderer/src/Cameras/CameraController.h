@@ -1,23 +1,22 @@
 #pragma once
-#include "Controller.h"
 #include "Events/Event.h"
 #include "Events/MouseEvent.h"
 #include "Events/ApplicationEvent.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace GLCore 
 {
 
-	class CameraController : public Controller
+	class CameraController
 	{
 	public:
 		CameraController();
 		~CameraController();
 
-		//void ComputeNewState(float deltaTime);
 		void OnUpdate(float deltaTime);
 		void OnEvent(Event& e);
 		bool OnMouseScrolled(MouseScrolledEvent& e);
-		//bool OnMouseMoved(MouseMovedEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
 		glm::vec3 GetPosition() const { return m_CameraPosition; }
 		glm::vec3 GetDirection() const { return m_CameraDirection; }

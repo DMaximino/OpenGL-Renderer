@@ -4,10 +4,10 @@
 #include "VertexBufferLayout.h"
 #include "Texture.h"
 #include <memory>
-#include "CameraController.h"
+#include "Cameras/CameraController.h"
 #include "imgui/imgui.h"
 #include "imgui/imfilebrowser.h"
-#include "CameraController.h"
+#include "Cameras/CameraController.h"
 
 
 namespace test {

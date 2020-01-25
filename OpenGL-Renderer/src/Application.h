@@ -1,10 +1,9 @@
 #pragma once
 #include <string>
-#include "Window.h"
+#include "Window/Window.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 #include "tests/Test.h"
-#include "Controller.h"
 
 namespace GLCore {
 

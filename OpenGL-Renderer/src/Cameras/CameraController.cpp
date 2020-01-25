@@ -1,12 +1,14 @@
 #include "CameraController.h"
-#include "Input.h"
+#include "Inputs/Input.h"
 #include <functional>
+// TODO: Get rid of GLFW include
+#include "GLFW/glfw3.h"
 
 namespace GLCore {
 
 #define BIND_EVENT_FN(x) std::bind(&CameraController::x, this, std::placeholders::_1)
 
-
+	// TODO: Add aspect ratio as a parameter in the constructor
 	CameraController::CameraController()
 		: m_HorizontalAngle(3.14f), m_VerticalAngle(0.0f), m_InitialFoV(45.0f), m_Speed(3.0f),
 		m_MouseSpeed(0.05f), m_CameraPosition(glm::vec3(4.0f, 3.0f, 3.0f)),
