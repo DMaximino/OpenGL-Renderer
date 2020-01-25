@@ -3,10 +3,11 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "stb_image/stb_image.h"
+#include "Input.h"
 
 
-test::TestDrawMultipleObjects::TestDrawMultipleObjects(WindowProperties windowProps)
-	: m_CameraController(windowProps), m_Window(windowProps.WindowObject), m_EditMode(true), m_CtrlPressed(false), m_FileDialog()
+test::TestDrawMultipleObjects::TestDrawMultipleObjects()
+	: m_CameraController(), m_EditMode(true), m_CtrlPressed(false), m_FileDialog()
 {
 
 	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
@@ -252,12 +253,12 @@ test::TestDrawMultipleObjects::~TestDrawMultipleObjects()
 
 void test::TestDrawMultipleObjects::OnUpdate(float deltaTime)
 {
-	if (glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	if (GLCore::Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
 		m_CtrlPressed = true;
 
 	if (m_CtrlPressed)
 	{
-		if (glfwGetKey(m_Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		if (GLCore::Input::IsKeyPressed(GLFW_KEY_ESCAPE))
 		{
 			m_EditMode = !m_EditMode;
 			m_CtrlPressed = false;
@@ -267,9 +268,9 @@ void test::TestDrawMultipleObjects::OnUpdate(float deltaTime)
 	if (m_EditMode)
 		return;
 
-	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	//glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	m_CameraController.ComputeNewState(deltaTime);
+	m_CameraController.OnUpdate(deltaTime);
 }
 
 void test::TestDrawMultipleObjects::OnRender()

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include "Events/Event.h"
 
 namespace test
 {
@@ -16,6 +17,7 @@ namespace test
 		virtual void OnUpdate(float deltaTime) {}
 		virtual void OnRender() {}
 		virtual void OnImGuiRender() {}
+		virtual void OnEvent(GLCore::Event& e) {}
 	};
 
 	class TestMenu : public Test

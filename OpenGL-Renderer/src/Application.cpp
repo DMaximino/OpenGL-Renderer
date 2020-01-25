@@ -65,7 +65,7 @@ namespace GLCore {
 		ImGui_ImplGlfw_InitForOpenGL(native_window, true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
-		windowProperties = { native_window,(float) m_Window->GetWidth(), (float) m_Window->GetHeight() };
+		//windowProperties = { native_window,(float) m_Window->GetWidth(), (float) m_Window->GetHeight() };
 
 		m_CurrentTest = nullptr;
 		m_TestMenu = new test::TestMenu(m_CurrentTest);
@@ -73,8 +73,8 @@ namespace GLCore {
 
 		m_TestMenu->RegisterTest<test::TestClearColor>("Clear Color");
 		m_TestMenu->RegisterTest<test::TestTexture2D>("Texture 2D");
-		m_TestMenu->RegisterTest<test::TestDrawCube>("Draw Cube", windowProperties);
-		m_TestMenu->RegisterTest<test::TestDrawMultipleObjects>("Draw Multiple Objects", windowProperties);
+		m_TestMenu->RegisterTest<test::TestDrawCube>("Draw Cube");
+		m_TestMenu->RegisterTest<test::TestDrawMultipleObjects>("Draw Multiple Objects");
 	}
 
 	Application::~Application() 
@@ -93,6 +93,8 @@ namespace GLCore {
 		// if so the event is dispatched to the right function to handle events 
 		// of this type and the evend is marked as 'handled'
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+
+		m_CurrentTest->OnEvent(e);
 
 	/*	for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{

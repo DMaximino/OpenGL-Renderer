@@ -4,10 +4,10 @@
 #include "VertexBufferLayout.h"
 #include "Texture.h"
 #include <memory>
-#include <GLFW/glfw3.h>
 #include "CameraController.h"
 #include "imgui/imgui.h"
 #include "imgui/imfilebrowser.h"
+#include "CameraController.h"
 
 
 namespace test {
@@ -15,12 +15,13 @@ namespace test {
 	class TestDrawCube : public Test
 	{
 	public:
-		TestDrawCube(WindowProperties window);
+		TestDrawCube();
 		~TestDrawCube();
 
 		void OnUpdate(float deltaTime) override;
 		void OnRender() override;
 		void OnImGuiRender() override;
+		void OnEvent(GLCore::Event& e) override;
 	private:
 		std::unique_ptr<VertexArray> m_VAO;
 		std::unique_ptr<VertexBuffer> m_VertexBuffer;
@@ -33,8 +34,7 @@ namespace test {
 
 		bool m_EditMode;
 		bool m_CtrlPressed;
-		GLFWwindow* m_Window;
-		CameraController m_CameraController;
+		GLCore::CameraController m_CameraController;
 		ImGui::FileBrowser m_FileDialog;
 		std::string m_TexturePath;
 		unsigned int m_TextureBuffer;

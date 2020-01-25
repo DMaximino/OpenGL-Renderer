@@ -4,7 +4,6 @@
 #include "VertexBufferLayout.h"
 #include "Texture.h"
 #include <memory>
-#include <GLFW/glfw3.h>
 #include "CameraController.h"
 #include "imgui/imgui.h"
 #include "imgui/imfilebrowser.h"
@@ -15,7 +14,7 @@ namespace test {
 	class TestDrawMultipleObjects : public Test
 	{
 	public:
-		TestDrawMultipleObjects(WindowProperties window);
+		TestDrawMultipleObjects();
 		~TestDrawMultipleObjects();
 
 		void OnUpdate(float deltaTime) override;
@@ -34,8 +33,7 @@ namespace test {
 
 		bool m_EditMode;
 		bool m_CtrlPressed;
-		GLFWwindow* m_Window;
-		CameraController m_CameraController;
+		GLCore::CameraController m_CameraController;
 		ImGui::FileBrowser m_FileDialog;
 		std::string m_TexturePath;
 		unsigned int m_TextureBuffer;

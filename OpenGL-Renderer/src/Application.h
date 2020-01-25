@@ -3,6 +3,8 @@
 #include "Window.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
+#include "tests/Test.h"
+#include "Controller.h"
 
 namespace GLCore {
 
@@ -32,7 +34,6 @@ namespace GLCore {
 		float m_LastFrameTime = 0.0f;
 		test::Test* m_CurrentTest;
 		test::TestMenu* m_TestMenu;
-		WindowProperties windowProperties;
 	private:
 		static Application* s_Instance;
 	};

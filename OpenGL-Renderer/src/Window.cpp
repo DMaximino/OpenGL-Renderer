@@ -61,64 +61,64 @@ namespace GLCore {
 		LOG_INFO("  Renderer: {0}", glGetString(GL_RENDERER));
 		LOG_INFO("  Version: {0}", glGetString(GL_VERSION));*/
 
-		//glfwSetWindowUserPointer(m_Window, &m_Data);
+		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
 		// Set GLFW callbacks
-		//glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
-		//	{
-		//		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-		//		data.Width = width;
-		//		data.Height = height;
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				data.Width = width;
+				data.Height = height;
 
-		//		// Creates an event and calls the callback function with this event as parameter
-		//		WindowResizeEvent event(width, height);
-		//		data.EventCallback(event);
-		//	});
+				// Creates an event and calls the callback function with this event as parameter
+				WindowResizeEvent event(width, height);
+				data.EventCallback(event);
+			});
 
-		//glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
-		//	{
-		//		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-		//		WindowCloseEvent event;
-		//		data.EventCallback(event);
-		//	});
+		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				WindowCloseEvent event;
+				data.EventCallback(event);
+			});
 
-		//glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-		//	{
-		//		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-		//		switch (action)
-		//		{
-		//		case GLFW_PRESS:
-		//		{
-		//			KeyPressedEvent event(key, 0);
-		//			data.EventCallback(event);
-		//			break;
-		//		}
-		//		case GLFW_RELEASE:
-		//		{
-		//			KeyReleasedEvent event(key);
-		//			data.EventCallback(event);
-		//			break;
-		//		}
-		//		case GLFW_REPEAT:
-		//		{
-		//			KeyPressedEvent event(key, 1);
-		//			data.EventCallback(event);
-		//			break;
-		//		}
-		//		}
-		//	});
+				switch (action)
+				{
+				case GLFW_PRESS:
+				{
+					KeyPressedEvent event(key, 0);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					KeyReleasedEvent event(key);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_REPEAT:
+				{
+					KeyPressedEvent event(key, 1);
+					data.EventCallback(event);
+					break;
+				}
+				}
+			});
 
-		/*glfwSetCharCallback(m_Window, [](GLFWwindow* window, uint32_t keycode)
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, uint32_t keycode)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 				KeyTypedEvent event(keycode);
 				data.EventCallback(event);
-			});*/
+			});
 
-	/*	glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -153,7 +153,7 @@ namespace GLCore {
 
 				MouseMovedEvent event((float)xPos, (float)yPos);
 				data.EventCallback(event);
-			});*/
+			});
 	}
 
 	void Window::Shutdown()

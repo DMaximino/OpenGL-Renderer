@@ -3,12 +3,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-struct WindowProperties
-{
-	GLFWwindow* WindowObject;
-	float Width;
-	float Height;
-};
 
 class Controller
 {
