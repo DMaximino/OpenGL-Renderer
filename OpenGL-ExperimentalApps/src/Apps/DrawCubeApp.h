@@ -1,5 +1,4 @@
 #pragma once
-#include "Test.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "Texture.h"
@@ -7,19 +6,24 @@
 #include "Cameras/CameraController.h"
 #include "imgui/imgui.h"
 #include "imgui/imfilebrowser.h"
-#include "Cameras/CameraController.h"
+#include "Application.h"
+
+using namespace GLCore;
+
+namespace ExperimentalApps {
 
 
-namespace test {
 
-	class TestDrawCube : public Test
+	class DrawCubeLayer : public GLCore::Layer
 	{
 	public:
-		TestDrawCube();
-		~TestDrawCube();
+		DrawCubeLayer();
+		~DrawCubeLayer();
 
+		void OnAttach() override;
+		void OnDetach() override;
 		void OnUpdate(float deltaTime) override;
-		void OnRender() override;
+		void OnRender();
 		void OnImGuiRender() override;
 		void OnEvent(GLCore::Event& e) override;
 	private:
@@ -39,6 +43,15 @@ namespace test {
 		std::string m_TexturePath;
 		unsigned int m_TextureBuffer;
 		int m_TextureWidth, m_TextureHeight;
-	
+
+	};
+
+	class DrawCubeApp : public Application
+	{
+	public:
+		DrawCubeApp()
+			:Application("Draw cube") {
+			PushLayer(new DrawCubeLayer());
+		};
 	};
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include "Test.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "Texture.h"
@@ -7,18 +6,22 @@
 #include "Cameras/CameraController.h"
 #include "imgui/imgui.h"
 #include "imgui/imfilebrowser.h"
+#include "Application.h"
+using namespace GLCore;
+
+namespace ExperimentalApps {
 
 
-namespace test {
-
-	class TestDrawMultipleObjects : public Test
+	class DrawMultipleObjectsLayer : public GLCore::Layer
 	{
 	public:
-		TestDrawMultipleObjects();
-		~TestDrawMultipleObjects();
+		DrawMultipleObjectsLayer();
+		~DrawMultipleObjectsLayer();
 
+		void OnAttach() override;
+		void OnDetach() override;
 		void OnUpdate(float deltaTime) override;
-		void OnRender() override;
+		void OnRender();
 		void OnImGuiRender() override;
 	private:
 		std::unique_ptr<VertexArray> m_VAO;
@@ -38,6 +41,15 @@ namespace test {
 		std::string m_TexturePath;
 		unsigned int m_TextureBuffer;
 		int m_TextureWidth, m_TextureHeight;
-	
+
+	};
+
+	class DrawMultipleObjectsApp : public Application
+	{
+	public:
+		DrawMultipleObjectsApp()
+			:Application("TestDrawMultipleObjects") {
+			PushLayer(new DrawMultipleObjectsLayer());
+		};
 	};
 }

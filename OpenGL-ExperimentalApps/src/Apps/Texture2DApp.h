@@ -1,21 +1,25 @@
 #pragma once
-#include "Test.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "Texture.h"
 #include <memory>
+#include "Application.h"
+
+using namespace GLCore;
+
+namespace ExperimentalApps {
 
 
-namespace test {
 
-	class TestTexture2D : public Test 
+	class Texture2DLayer : public GLCore::Layer
 	{
 	public:
-		TestTexture2D();
-		~TestTexture2D();
-
+		Texture2DLayer();
+		~Texture2DLayer();
+		void OnAttach() override;
+		void OnDetach() override;
 		void OnUpdate(float deltaTime) override;
-		void OnRender() override;
+		void OnRender();
 		void OnImGuiRender() override;
 	private:
 		std::unique_ptr<VertexArray> m_VAO;
@@ -28,5 +32,15 @@ namespace test {
 		glm::mat4 m_View;
 		glm::vec3 m_TranslationA;
 		glm::vec3 m_TranslationB;
-};
+	};
+
+	class Texture2DApp : public Application
+	{
+	public:
+		Texture2DApp()
+			:Application("TestTexture2D") {
+			PushLayer(new Texture2DLayer());
+		};
+	};
+
 }

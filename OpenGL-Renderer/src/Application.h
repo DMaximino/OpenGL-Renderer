@@ -3,7 +3,8 @@
 #include "Window/Window.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
-#include "tests/Test.h"
+#include "ImGuiLayer.h"
+#include "LayerStack.h"
 
 namespace GLCore {
 
@@ -11,14 +12,14 @@ namespace GLCore {
 	{
 	public:
 		Application(const std::string& name = "OpenGL Sandbox", uint32_t width = 1280, uint32_t height = 720);
-		~Application();
+		virtual ~Application() = default;
 
 		void Run();
 
 		void OnEvent(Event& e);
 
-		//void PushLayer(Layer* layer);
-		//void PushOverlay(Layer* layer);
+		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* layer);
 
 		inline Window& GetWindow() { return *m_Window; }
 
@@ -27,13 +28,12 @@ namespace GLCore {
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
 		std::unique_ptr<Window> m_Window;
-		//ImGuiLayer* m_ImGuiLayer;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
-		//LayerStack m_LayerStack;
+		LayerStack m_LayerStack;
 		float m_LastFrameTime = 0.0f;
-		test::Test* m_CurrentTest;
-		test::TestMenu* m_TestMenu;
 	private:
 		static Application* s_Instance;
 	};
+
 }

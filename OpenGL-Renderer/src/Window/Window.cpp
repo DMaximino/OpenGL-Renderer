@@ -2,9 +2,6 @@
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
-
-
-
 #include <GLFW/glfw3.h>
 
 namespace GLCore {

@@ -1,19 +1,29 @@
-#include "TestTexture2D.h"
+#include "Texture2DApp.h"
 #include "Renderer.h"
 #include "imgui/imgui.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-test::TestTexture2D::TestTexture2D()
+ExperimentalApps::Texture2DLayer::Texture2DLayer()
 	: m_TranslationA(200,200,0), m_TranslationB(400,200,0),
 	m_Proj(glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f)),
 	m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)))
 {
+
+
+}
+
+ExperimentalApps::Texture2DLayer::~Texture2DLayer()
+{
+}
+
+void ExperimentalApps::Texture2DLayer::OnAttach()
+{
 	float positions[] = {
-				-50.0f, -50.0f, 0.0f, 0.0f, //0
-				 50.0f, -50.0f, 1.0f, 0.0f, //1
-				 50.0f,  50.0f, 1.0f, 1.0f, //2
-				-50.0f,  50.0f, 0.0f, 1.0f  //3
+			-50.0f, -50.0f, 0.0f, 0.0f, //0
+			 50.0f, -50.0f, 1.0f, 0.0f, //1
+			 50.0f,  50.0f, 1.0f, 1.0f, //2
+			-50.0f,  50.0f, 0.0f, 1.0f  //3
 	};
 
 	unsigned int indexes[] = {
@@ -45,18 +55,18 @@ test::TestTexture2D::TestTexture2D()
 
 	m_Texture = std::make_unique<Texture>("resources/textures/el-capitan.png");
 	m_Shader->SetUniform1i("u_Texture", 0);
-
 }
 
-test::TestTexture2D::~TestTexture2D()
+void ExperimentalApps::Texture2DLayer::OnDetach()
 {
 }
 
-void test::TestTexture2D::OnUpdate(float deltaTime)
+void ExperimentalApps::Texture2DLayer::OnUpdate(float deltaTime)
 {
+	OnRender();
 }
 
-void test::TestTexture2D::OnRender()
+void ExperimentalApps::Texture2DLayer::OnRender()
 {
 	GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 	GLCall(glClear(GL_COLOR_BUFFER_BIT));
@@ -83,7 +93,7 @@ void test::TestTexture2D::OnRender()
 	}
 }
 
-void test::TestTexture2D::OnImGuiRender()
+void ExperimentalApps::Texture2DLayer::OnImGuiRender()
 {
 	ImGui::SliderFloat3("Translation A", &m_TranslationA.x, 0.0f, 960.0f);
 	ImGui::SliderFloat3("Translation B", &m_TranslationB.x, 0.0f, 960.0f);

@@ -1,4 +1,4 @@
-#include "TestDrawCube.h"
+#include "DrawCubeApp.h"
 #include "Renderer.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -8,12 +8,22 @@
 #include "GLFW/glfw3.h"
 
 
-test::TestDrawCube::TestDrawCube()
+ExperimentalApps::DrawCubeLayer::DrawCubeLayer()
 	: m_CameraController(), m_EditMode(true), m_CtrlPressed(false), m_FileDialog()
 {
 
+
+}
+
+ExperimentalApps::DrawCubeLayer::~DrawCubeLayer()
+{
+
+}
+
+void ExperimentalApps::DrawCubeLayer::OnAttach()
+{
 	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
-	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
+// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
 	const float positions[] = {
 		 -1.0f,-1.0f,-1.0f, // triangle 1 : begin
 	-1.0f,-1.0f, 1.0f,
@@ -187,12 +197,12 @@ test::TestDrawCube::TestDrawCube()
 
 }
 
-test::TestDrawCube::~TestDrawCube()
+void ExperimentalApps::DrawCubeLayer::OnDetach()
 {
 	GLCall(glDisable(GL_DEPTH_TEST));
 }
 
-void test::TestDrawCube::OnUpdate(float deltaTime)
+void ExperimentalApps::DrawCubeLayer::OnUpdate(float deltaTime)
 {
 
 	if (GLCore::Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
@@ -207,15 +217,17 @@ void test::TestDrawCube::OnUpdate(float deltaTime)
 		}
 	}
 
-	if (m_EditMode)
-		return;
+	if (m_EditMode == false)
+	{
 
-	//glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		//glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	m_CameraController.OnUpdate(deltaTime);
+		m_CameraController.OnUpdate(deltaTime);
+	}
+	OnRender();
 }
 
-void test::TestDrawCube::OnRender()
+void ExperimentalApps::DrawCubeLayer::OnRender()
 {
 	GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 	// Clear the screen
@@ -246,7 +258,7 @@ void test::TestDrawCube::OnRender()
 	}
 }
 
-void test::TestDrawCube::OnEvent(GLCore::Event& e)
+void ExperimentalApps::DrawCubeLayer::OnEvent(GLCore::Event& e)
 {
 	m_CameraController.OnEvent(e);
 }
@@ -269,7 +281,7 @@ std::string GetFileName(const std::string& s) {
 }
 
 //TODO: Understand why the texture is shown upside down
-void test::TestDrawCube::OnImGuiRender()
+void ExperimentalApps::DrawCubeLayer::OnImGuiRender()
 {
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::Spacing();

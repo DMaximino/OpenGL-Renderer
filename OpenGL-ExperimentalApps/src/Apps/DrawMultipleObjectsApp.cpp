@@ -1,15 +1,26 @@
-#include "TestDrawMultipleObjects.h"
+#include "DrawMultipleObjectsApp.h"
 #include "Renderer.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "stb_image/stb_image.h"
 #include "Inputs/Input.h"
+// TODO: Get rid of glfw include
+#include "GLFW/glfw3.h"
 
 
-test::TestDrawMultipleObjects::TestDrawMultipleObjects()
+ExperimentalApps::DrawMultipleObjectsLayer::DrawMultipleObjectsLayer()
 	: m_CameraController(), m_EditMode(true), m_CtrlPressed(false), m_FileDialog()
 {
 
+}
+
+ExperimentalApps::DrawMultipleObjectsLayer::~DrawMultipleObjectsLayer()
+{
+
+}
+
+void ExperimentalApps::DrawMultipleObjectsLayer::OnAttach()
+{
 	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
 	const float positions[] = {
@@ -243,15 +254,14 @@ test::TestDrawMultipleObjects::TestDrawMultipleObjects()
 
 	//m_Texture = std::make_unique<Texture>("resources/textures/el-capitan.png");
 	//m_Shader->SetUniform1i("u_Texture", 0);
-
 }
 
-test::TestDrawMultipleObjects::~TestDrawMultipleObjects()
+void ExperimentalApps::DrawMultipleObjectsLayer::OnDetach()
 {
 	GLCall(glDisable(GL_DEPTH_TEST));
 }
 
-void test::TestDrawMultipleObjects::OnUpdate(float deltaTime)
+void ExperimentalApps::DrawMultipleObjectsLayer::OnUpdate(float deltaTime)
 {
 	if (GLCore::Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
 		m_CtrlPressed = true;
@@ -265,15 +275,18 @@ void test::TestDrawMultipleObjects::OnUpdate(float deltaTime)
 		}
 	}
 
-	if (m_EditMode)
-		return;
+	if (m_EditMode == false)
+	{
 
-	//glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		//glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	m_CameraController.OnUpdate(deltaTime);
+		m_CameraController.OnUpdate(deltaTime);
+	}
+
+	OnRender();
 }
 
-void test::TestDrawMultipleObjects::OnRender()
+void ExperimentalApps::DrawMultipleObjectsLayer::OnRender()
 {
 	GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 	// Clear the screen
@@ -336,7 +349,7 @@ void test::TestDrawMultipleObjects::OnRender()
 //}
 
 //TODO: Understand why the texture is shown upside down
-void test::TestDrawMultipleObjects::OnImGuiRender()
+void ExperimentalApps::DrawMultipleObjectsLayer::OnImGuiRender()
 {
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::Spacing();
